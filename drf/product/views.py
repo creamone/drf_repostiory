@@ -8,15 +8,18 @@ from product.serializers import ProductSerializer
 
 from datetime import datetime
 from django.db.models import Q
+from Django.permissions import RegisteredMoreThanThreeDaysUser
 # Create your views here.
 
 
 class ProductView(APIView):
 
+    permission_classes = [RegisteredMoreThanThreeDaysUser]
+
     def get(self, request):
         today = datetime.now()
         products = ProductModel.objects.filter(
-            Q(exposure_start_date__lte=today, exposure_end_date__gte=today,) |
+            Q(exposure_end_date__gte=today, is_active=True) |
             Q(user=request.user)
         )
 
